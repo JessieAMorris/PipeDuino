@@ -25,4 +25,3 @@ void MIDIControlChange(byte channel, byte control, byte value) {
   midiEventPacket_t event = { 0x0B, 0xB0 | channel-1, control, value };
   MidiUSB.sendMIDI(event);
 }
-

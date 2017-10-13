@@ -1,5 +1,5 @@
 void InitialiseKeys() {
-  for (byte Keyboard = 0; Keyboard<MaxKeyboards; Keyboard++) {
+  for (byte Keyboard = 0; Keyboard<EnabledKeyboards; Keyboard++) {
     byte Note = 36;   //Bottom C
     for (byte Key = 0; Key < MaxKeys; Key++) {
       Keyboards[Keyboard].Keys[Key].Value = 0;
@@ -10,7 +10,7 @@ void InitialiseKeys() {
   }
 }
 
-void ProcessKey(byte Key, byte Value, byte Keyboard) {
+void processKey(byte Key, byte Value, byte Keyboard) {
   if (Value != Keyboards[Keyboard].Keys[Key].Value) {
     //Key has changed position
     if (Value == 0) {

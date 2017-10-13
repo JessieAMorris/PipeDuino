@@ -8,5 +8,3 @@ inline void digitalWriteDirect(int pin, boolean val) {
 inline int digitalReadDirect(int pin) {
   return !!(g_APinDescription[pin].pPort->PIO_PDSR & g_APinDescription[pin].ulPin);
 }
-
-
