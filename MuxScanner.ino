@@ -3,21 +3,23 @@
 //Each matrix has its own set of eight input lines, one for each column.
 
 void InitialiseMultiplexer() {
-  CurrentMuxSelectRow = 0;
+  currentMuxSelectRow = 0;
   for (byte row = 0; row < 8; row++) {
     pinMode(MuxRowAddressPins[row], OUTPUT);
   }
 
-  for (byte col = 0; col < 8; col++) {
-    for (int keyboard = 0; keyboard < EnabledKeyboards - 1; keyboard++) {
-      if(KeyboardInputPins[keyboard][col] != -1) {
+  for (int keyboard = 0; keyboard < ENABLED_KEYBOARDS; keyboard++) {
+    for (byte col = 0; col < 8; col++) {
+      if(KeyboardInputPins[keyboard][col] != 0) {
         pinMode(KeyboardInputPins[keyboard][col], INPUT);
       }
     }
+  }
 
-    for (int piston = 0; piston < EnabledPistons; piston++) {
-      if(PistonInputPins[piston][col] != -1) {
-        pinMode(KeyboardInputPins[piston][col], INPUT);
+  for (int piston = 0; piston < EnabledPistons; piston++) {
+    for (byte col = 0; col < 8; col++) {
+      if(PistonInputPins[piston][col] != 0) {
+        pinMode(PistonInputPins[piston][col], INPUT);
       }
     }
   }
@@ -27,7 +29,7 @@ void SetRowAddressLines() {
   for (byte row = 0; row < 8; row++) {
     digitalWriteDirect(MuxRowAddressPins[row], LOW);
   }
-  digitalWriteDirect(MuxRowAddressPins[CurrentMuxSelectRow], HIGH);
+  digitalWriteDirect(MuxRowAddressPins[currentMuxSelectRow], HIGH);
   delayMicroseconds(20);   //Address line settling time
 }
 
@@ -39,28 +41,30 @@ void ScanKeyboardMultiplexers() {
   for (row = 0; row < 8; row++) {
     digitalWriteDirect(MuxRowAddressPins[row], LOW);
   }
-  digitalWriteDirect(MuxRowAddressPins[CurrentMuxSelectRow], HIGH);
+  digitalWriteDirect(MuxRowAddressPins[currentMuxSelectRow], HIGH);
   delayMicroseconds(20);   //Address line settling time
 
   //Read columns for each existing keyboard
   for (col = 0; col < 8; col++) {
-    for (byte keyboard = 0; keyboard < EnabledKeyboards - 1; keyboard++) {
-      int pinValue = digitalReadDirect(KeyboardInputPins[keyboard][col]);
-      processKey(CurrentMuxSelectRow + col * 8, pinValue, keyboard);
+    for (byte keyboard = 0; keyboard < ENABLED_KEYBOARDS; keyboard++) {
+      if(KeyboardInputPins[keyboard][col] != 0) {
+        int pinValue = digitalReadDirect(KeyboardInputPins[keyboard][col]);
+        processKey(currentMuxSelectRow + col * 8, pinValue, keyboard);
+      }
     }
 
     /*
     if (PistonMatrixExists) {
       int PinValue = digitalReadDirect(PistonsRowInputPins[col]);
       //Switches 00..63 are pistons 32..95
-      ProcessPiston(CurrentMuxSelectRow + ((col + 4) * 8), PinValue);
+      ProcessPiston(currentMuxSelectRow + ((col + 4) * 8), PinValue);
     }
     */
   }
 
   //Step to next row
-  CurrentMuxSelectRow++;
-  if (CurrentMuxSelectRow > 7) {
-    CurrentMuxSelectRow = 0;
+  currentMuxSelectRow++;
+  if (currentMuxSelectRow > 7) {
+    currentMuxSelectRow = 0;
   }
 }

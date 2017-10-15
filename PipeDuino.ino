@@ -30,7 +30,7 @@ them both to meet your requirements.
 Requires the MIDIUSB library, available from https://github.com/arduino-libraries/MIDIUSB
 
 ********** LIMITATIONS
-Code, as written, only works on the Arduino Due 
+Code, as written, only works on the Arduino Due
 
 ********** VERSION INFORMATION
 
@@ -50,8 +50,6 @@ const String ContactInfo    = "John Linford, JohnL@g3wgv.com";
 const String ProgramVersion = "0.001.02";
 const String ProgramDate    = "2017-01-22";
 
-#define MaxKeyboards 8
-
 #include "config.h"
 #include "MIDIUSB.h"
 
@@ -62,12 +60,12 @@ struct KeyValueStruct {
   byte Sample;
 };
 
-struct KeyboardStruct{
-  KeyValueStruct Keys[MaxKeys];
+struct KeyboardStruct {
+  KeyValueStruct keys[MaxKeys];
   int SwellPedal;
 };
 
-KeyboardStruct Keyboards[MaxKeyboards];
+KeyboardStruct keyboards[ENABLED_KEYBOARDS];
 
 //Pistons/stops structure and table
 struct PistonValueStruct {
@@ -85,29 +83,33 @@ byte SampleNumber;
 
 
 //General variables
-byte CurrentMuxSelectRow;
-unsigned long Milliseconds;
+byte currentMuxSelectRow;
+unsigned long milliseconds;
 
 void setup()
 {
   Serial.begin(115200);
-  InitialiseMultiplexer();
-  InitialiseSwellPedals();
-  InitialiseKeys();
-  InitialisePistons();
   Serial.println("*********************************************");
   Serial.println("*  Arduino MIDI encoder for Hauptwerk VPO   *");
   Serial.println("*  (C) 2017, John Linford, JohnL@g3wgv.com  *");
   Serial.println("*********************************************");
+  InitialiseMultiplexer();
+  InitialiseSwellPedals();
+  InitialiseKeys();
+  InitialisePistons();
+  Serial.println("Init done");
 }
 
 void loop()
 {
-  unsigned long M = millis();
-  if (M != Milliseconds) {
-    Milliseconds = M;
+  unsigned long m = millis();
+  if (m != milliseconds) {
     ScanKeyboardMultiplexers();
-    if (Milliseconds % 100 == 0) {
+
+    milliseconds = m;
+    // Limit the swell to prevent MIDI message floods
+    if (milliseconds % 100 == 0) {
+
       ScanSwellPedals();
     }
   }

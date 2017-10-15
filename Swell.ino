@@ -5,20 +5,20 @@
 //by 8 to give 0..127 in 16 steps of 8
 
 void InitialiseSwellPedals() {
-  for (byte S = 0; S < EnabledKeyboards; S++) {
+  for (byte S = 0; S < ENABLED_KEYBOARDS; S++) {
     pinMode(SwellPedalPin[S], INPUT);
   }
 }
 
 void ScanSwellPedals() {
-  for (byte S = 0; S < EnabledKeyboards; S++) {
+  for (byte S = 0; S < ENABLED_KEYBOARDS; S++) {
     int SV = analogRead(SwellPedalPin[S]);
     int SwellValue = round(SV / 64) * 8;           //Scale to 0..120 in steps of 8
     if (SV > 1022) {
       SwellValue = 127;                            //Handle the fully open condition
     }
-    if (Keyboards[S].SwellPedal != SwellValue) {
-      Keyboards[S].SwellPedal = SwellValue;
+    if (keyboards[S].SwellPedal != SwellValue) {
+      keyboards[S].SwellPedal = SwellValue;
       MIDIControlChange(MIDISwellChannel, S, SwellValue);
       if (PrintMIDITransactions) {
         Serial.print("Expression pedal for ");

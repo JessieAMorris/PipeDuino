@@ -1,36 +1,36 @@
 void InitialiseKeys() {
-  for (byte Keyboard = 0; Keyboard<EnabledKeyboards; Keyboard++) {
+  for (byte keyboard = 0; keyboard < ENABLED_KEYBOARDS; keyboard++) {
     byte Note = 36;   //Bottom C
-    for (byte Key = 0; Key < MaxKeys; Key++) {
-      Keyboards[Keyboard].Keys[Key].Value = 0;
-      Keyboards[Keyboard].Keys[Key].Sample = 0;
-      Keyboards[Keyboard].Keys[Key].Note = Note;
+    for (byte key = 0; key < MaxKeys; key++) {
+      keyboards[keyboard].keys[key].Value = 0;
+      keyboards[keyboard].keys[key].Sample = 0;
+      keyboards[keyboard].keys[key].Note = Note;
       Note++;
     }
   }
 }
 
-void processKey(byte Key, byte Value, byte Keyboard) {
-  if (Value != Keyboards[Keyboard].Keys[Key].Value) {
-    //Key has changed position
+void processKey(byte key, byte Value, byte keyboard) {
+  if (Value != keyboards[keyboard].keys[key].Value) {
+    //key has changed position
     if (Value == 0) {
-      //Key off
-      MIDINoteOff(MIDIChannel[Keyboard], Keyboards[Keyboard].Keys[Key].Note, 64);
+      //key off
+      MIDINoteOff(MIDIChannel[keyboard], keyboards[keyboard].keys[key].Note, 64);
       if (PrintMIDITransactions) {
-        Serial.print(KeyboardName[Keyboard]);
+        Serial.print(KeyboardName[keyboard]);
         Serial.print(", note off: ");
-        Serial.println(Keyboards[Keyboard].Keys[Key].Note);
+        Serial.println(keyboards[keyboard].keys[key].Note);
       }
     }
     else {
-      //Key on
-      MIDINoteOn(MIDIChannel[Keyboard], Keyboards[Keyboard].Keys[Key].Note, 64);
+      //key on
+      MIDINoteOn(MIDIChannel[keyboard], keyboards[keyboard].keys[key].Note, 64);
       if (PrintMIDITransactions) {
-        Serial.print(KeyboardName[Keyboard]);
+        Serial.print(KeyboardName[keyboard]);
         Serial.print(", note on:  ");
-        Serial.println(Keyboards[Keyboard].Keys[Key].Note);
+        Serial.println(keyboards[keyboard].keys[key].Note);
       }
     }
-    Keyboards[Keyboard].Keys[Key].Value = Value;
+    keyboards[keyboard].keys[key].Value = Value;
   }
 }
